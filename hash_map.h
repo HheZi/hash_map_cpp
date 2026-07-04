@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
-#include "assignable_and_hashable.h"
+#include "equable_and_hashable.h"
 #include "node.h"
 #include "hash_map.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "assignable_and_hashable.h"
+#include "equable_and_hashable.h"
 #include <memory>
 
 template <EquableAndHashable K, typename V> class Node {
