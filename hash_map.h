@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
@@ -11,6 +12,7 @@ template <EquableAndHashable K, typename V>
 class HashMap {
 private:
   constexpr static size_t DEFAULT_CAPACITY = 20;
+  constexpr static float A = 0.618033;
   size_t capacity{}, size{};
   float load_factor{0.75};
   std::vector<Node<K, V> *> table;
@@ -60,7 +62,7 @@ HashMap<K, V>::~HashMap() {
 
 template <EquableAndHashable K, typename V>
 size_t HashMap<K, V>::getHashKey(const K &key, const size_t capacity) const {
-  return std::hash<K>{}(key) % capacity;
+  return std::floor(capacity * (static_cast<size_t>(std::hash<K>{}(key) * A) % 1));
 }
 
 template <EquableAndHashable K, typename V>
