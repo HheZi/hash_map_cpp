@@ -9,7 +9,7 @@
 #include "hash_map.h"
 
 template <EquableAndHashable K, typename V>
-class HashMap {
+class HashMapChanining {
 private:
   constexpr static size_t DEFAULT_CAPACITY = 20;
   constexpr static float A = 0.618033;
@@ -22,10 +22,10 @@ private:
   void resizeTable(const size_t new_capacity);
 
 public:
-  HashMap();
-  HashMap(size_t capacity);
-  HashMap(float load_factor);
-  ~HashMap();
+  HashMapChanining();
+  HashMapChanining(size_t capacity);
+  HashMapChanining(float load_factor);
+  ~HashMapChanining();
 
   V *get(const K &key) const;
   void put(K key, V value);
@@ -37,22 +37,22 @@ public:
 };
 
 template <EquableAndHashable K, typename V>
-HashMap<K, V>::HashMap()
-  : HashMap{DEFAULT_CAPACITY} {}
+HashMapChanining<K, V>::HashMapChanining()
+  : HashMapChanining{DEFAULT_CAPACITY} {}
 
 template <EquableAndHashable K, typename V>
-HashMap<K, V>::HashMap(size_t capacity)
+HashMapChanining<K, V>::HashMapChanining(size_t capacity)
     : table{capacity, nullptr}, capacity{capacity}, size{0} {}
 
 template <EquableAndHashable K, typename V>
-HashMap<K, V>::HashMap(float load_factor) : HashMap{DEFAULT_CAPACITY} {
+HashMapChanining<K, V>::HashMapChanining(float load_factor) : HashMapChanining{DEFAULT_CAPACITY} {
     this->load_factor = load_factor;
     if (load_factor > 1) {
       throw std::invalid_argument("Load factor cannot be more than 1");
     }
 }
 template <EquableAndHashable K, typename V>
-HashMap<K, V>::~HashMap() {
+HashMapChanining<K, V>::~HashMapChanining() {
     for (int i = 0; i < table.size(); i++) {
       delete table[i];
 
@@ -61,17 +61,17 @@ HashMap<K, V>::~HashMap() {
   }
 
 template <EquableAndHashable K, typename V>
-size_t HashMap<K, V>::getHashKey(const K &key, const size_t capacity) const {
+size_t HashMapChanining<K, V>::getHashKey(const K &key, const size_t capacity) const {
   return std::floor(capacity * (static_cast<size_t>(std::hash<K>{}(key) * A) % 1));
 }
 
 template <EquableAndHashable K, typename V>
-bool HashMap<K, V>::shouldReziseTable() {
+bool HashMapChanining<K, V>::shouldReziseTable() {
   return static_cast<float>(size) / capacity >= load_factor;
 }
 
 template <EquableAndHashable K, typename V>
-void HashMap<K, V>::resizeTable(const size_t new_capacity) {
+void HashMapChanining<K, V>::resizeTable(const size_t new_capacity) {
   std::vector<Node<K, V> *> new_table{new_capacity, nullptr};
 
   for (Node<K, V> *node : table) {
@@ -87,7 +87,7 @@ void HashMap<K, V>::resizeTable(const size_t new_capacity) {
 }
 
 template <EquableAndHashable K, typename V>
-V *HashMap<K, V>::get(const K &key) const {
+V *HashMapChanining<K, V>::get(const K &key) const {
   size_t h = getHashKey(key, capacity);
 
   Node<K, V> *node = table[h];
@@ -104,7 +104,7 @@ V *HashMap<K, V>::get(const K &key) const {
 }
 
 template <EquableAndHashable K, typename V>
-void HashMap<K, V>::put(K key, V value) {
+void HashMapChanining<K, V>::put(K key, V value) {
   if (shouldReziseTable()) {
     resizeTable(capacity * 2);
   }
@@ -135,7 +135,7 @@ void HashMap<K, V>::put(K key, V value) {
 }
 
 template <EquableAndHashable K, typename V>
-void HashMap<K, V>::remove(const K &key) {
+void HashMapChanining<K, V>::remove(const K &key) {
   size_t h = getHashKey(key, capacity);
   if (table[h] == nullptr) {
     return;
@@ -166,7 +166,7 @@ void HashMap<K, V>::remove(const K &key) {
 }
 
 template <EquableAndHashable K, typename V>
-V *HashMap<K, V>::operator[](const K &key) const {
+V *HashMapChanining<K, V>::operator[](const K &key) const {
   return get(key);
 }
 
