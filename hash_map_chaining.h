@@ -47,13 +47,14 @@ private:
 template <EquableAndHashable K, typename V>
 class HashMapChanining {
 private:
-  constexpr static size_t DEFAULT_CAPACITY = 20;
+  constexpr static size_t DEFAULT_CAPACITY = 20, MIN_CAPACITY = 5;
   constexpr static float A = 0.618033;
   size_t capacity{}, size{};
   float load_factor{0.75};
   std::vector<Node<K, V> *> table;
 
   size_t getHashKey(const K &key, const size_t capacity) const;
+  size_t nextPrime(size_t x);
   bool shouldReziseTable();
   void resizeTable(const size_t new_capacity);
 
@@ -78,7 +79,9 @@ HashMapChanining<K, V>::HashMapChanining()
 
 template <EquableAndHashable K, typename V>
 HashMapChanining<K, V>::HashMapChanining(size_t capacity)
-    : table{capacity, nullptr}, capacity{capacity}, size{0} {}
+  : capacity{nextPrime(capacity)}, table{capacity, nullptr} {
+  if(capacity < MIN_CAPACITY) throw std::invalid_argument{"Capacity is too small"};
+}
 
 template <EquableAndHashable K, typename V>
 HashMapChanining<K, V>::HashMapChanining(float load_factor) : HashMapChanining{DEFAULT_CAPACITY} {
@@ -142,7 +145,7 @@ V *HashMapChanining<K, V>::get(const K &key) const {
 template <EquableAndHashable K, typename V>
 void HashMapChanining<K, V>::put(K key, V value) {
   if (shouldReziseTable()) {
-    resizeTable(capacity * 2);
+    resizeTable(nextPrime(capacity * 2));
   }
 
   size_t h = getHashKey(key, capacity);
@@ -206,3 +209,15 @@ V *HashMapChanining<K, V>::operator[](const K &key) const {
   return get(key);
 }
 
+template <EquableAndHashable K, typename V>
+size_t HashMapChanining<K, V>::nextPrime(size_t n) {
+  auto isPrime = [](size_t x) {
+    if (x < 2) return false;
+    for (size_t d = 2; d * d <= x; d++) {
+      if (x % d == 0) return false;
+    }
+    return true;
+  };
+  while (!isPrime(n)) n++;
+  return n;
+}
